@@ -15,7 +15,7 @@ We accomplish this by creating a version of 2FA for DApps that enables users to 
 
 ## Technology
 
-A user id is associated with a private key, which is stored privately in an Enigma secret contract. Upon login on 3nable, a user can create a one-time (time-bound) access code that is linked to the user id and stored in an Enigma secret contract (similar to 2FA). I.e. for a short period of time, there exists a link of private key <--> user id <--> code. 
+A user id is associated with a private key, which is stored privately in an [Enigma](https://enigma.co/) secret contract. Upon login on 3nable, a user can create a one-time (time-bound) access code that is linked to the user id and stored in an Enigma secret contract (similar to 2FA). I.e. for a short period of time, there exists a link of private key <--> user id <--> code. 
 
 A DApp that uses 3nable for login (or signing transactions) prompts users for this access code. When the code is provided to 3nable's login on the DApp, a function within the Enigma secret contract will retrieve the private key and use it to sign a message or a transaction within the Trusted Execution Environment.
 
@@ -44,10 +44,16 @@ git clone git@github.com:3nable-login/3nable.git
 git clone git@github.com:enigmampc/enigma-core.git
 ```
 
-Make sure that you have Enigma's [`discovery-cli`](https://github.com/enigmampc/discovery-cli) installed. Then, compile the contract by simply running
+Make sure that you have Enigma's [`discovery-cli`](https://github.com/enigmampc/discovery-cli) installed. Navigate inside the 3nable directory
 ```
+cd 3nable
+```
+Then, initialize the enigma project and compile the contract by running
+```
+discovery init
 discovery compile
 ```
+In case you are not sure whether your hardware supports TEEs, chose the option `sw` when running `discovery init`.
 
 ### Test the secret contract
 
@@ -55,9 +61,8 @@ In a separate terminal tab, start the Enigma development environment
 ```
 discovery start
 ```
-Back in the first tab, navigate inside the 3nable directory and run the test command
+Back in the first tab, run the test command
 ```
-cd 3nable
 discovery test
 ```
 
