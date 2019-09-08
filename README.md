@@ -4,11 +4,14 @@ Allows you to interact with dApps without a Web3.0 provider or pulling your keys
 
 ![3nable Logo](./additional_resources/logo.jpg)
 
-Devpost: LINK
+Devpost: https://devpost.com/software/3nable
+
 
 ## Overview
 
-PUT SOMETHING HERE
+3nable allows message (or transaction) signatures to occur in a secure environment instead of pulling keys into local browsers. 
+
+We accomplish this by creating a version of 2FA for DApps that enables users to connect to Web 3.0 by inputting a unique code.  Users can retrieve this code by logging onto the 3nable site and copying the code into the DApp's 3nable login.
 
 ## Technology
 
@@ -65,7 +68,12 @@ Make sure you have the Enigma development environment running. Then execute
 discovery migrate
 ```
 
+## Team
+
+* 🇺🇸 Aaron Soskin
+* 🇩🇪 Sabine Bertram
+
 ## Additional Resources
 
-* Pitch Deck:
-* User-flow Mockup: 
+* Pitch Deck: 
+* User-flow Mockup: https://youtu.be/NC3oE5s5MY8
