@@ -41,7 +41,6 @@ static LOGINS: &str = "logins";
 pub struct User {
     user_id: String,
     private_key: Vec<u8>,
-    public_key: Vec<u8>
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -68,7 +67,7 @@ impl Contract {
 // Public trait defining public-facing secret contract functions
 #[pub_interface]
 pub trait ContractInterface{
-    fn add_user(user_id: String, private_key: Vec<u8>, public_key: Vec<u8>);
+    fn add_user(user_id: String, private_key: Vec<u8>);
     fn add_login(user_id: String, code: U256);
     fn sign_message(code: U256, message: String) -> (Vec<u8>, Vec<u8>);
 }
@@ -77,13 +76,12 @@ pub trait ContractInterface{
 // trait implementation for the Contract struct above
 impl ContractInterface for Contract {
     #[no_mangle]
-    fn add_user(user_id: String, private_key: Vec<u8>, public_key: Vec<u8>) {
+    fn add_user(user_id: String, private_key: Vec<u8>) {
         // create a user and push it into users
         let mut users = Self::get_users();
         users.push(User {
             user_id,
             private_key,
-            public_key,
         });
         // update the state
         write_state!(USERS => users);
@@ -135,7 +133,7 @@ impl ContractInterface for Contract {
                     // update the logins state
                     write_state!(LOGINS => logins);
                     // return the signed message and the public key
-                    (signed_message.to_vec(), user.public_key.clone())
+                    (signed_message.to_vec(), keys.get_pubkey().to_vec())
                 } else {
                     panic!("Error: Code not valid")
                 }
