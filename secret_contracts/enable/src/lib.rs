@@ -30,6 +30,7 @@ use eng_wasm::*;
 use eng_wasm_derive::pub_interface;
 use eng_wasm::{String, Vec};
 use enigma_crypto::asymmetric::KeyPair;
+use rustc_hex::ToHex;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,7 +70,7 @@ impl Contract {
 pub trait ContractInterface{
     fn add_user(user_id: String, private_key: Vec<u8>);
     fn add_login(user_id: String, code: U256);
-    fn sign_message(code: U256, message: String) -> (Vec<u8>, Vec<u8>);
+    fn sign_message(code: U256, message: String) -> Vec<u8>;
 }
 
 // Implementation of the public-facing secret contract functions defined in the ContractInterface
@@ -109,7 +110,7 @@ impl ContractInterface for Contract {
     }
 
     #[no_mangle]
-    fn sign_message(code: U256, message: String) -> (Vec<u8>, Vec<u8>) {
+    fn sign_message(code: U256, message: String) -> Vec<u8> {
         let mut logins = Self::get_logins();
         let users = Self::get_users();
         // check that a login instance with that code exists
@@ -133,7 +134,12 @@ impl ContractInterface for Contract {
                     // update the logins state
                     write_state!(LOGINS => logins);
                     // return the signed message and the public key
-                    (signed_message.to_vec(), keys.get_pubkey().to_vec())
+                    let mut result = keys.get_pubkey().to_vec();
+                    let mut signature_suffix = signed_message.to_vec();
+                    result.append(&mut signature_suffix);
+                    let msg: String = result.to_hex();
+                    eprint!("The pub key from the generated key material({})", msg);
+                    result
                 } else {
                     panic!("Error: Code not valid")
                 }

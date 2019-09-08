@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 const {Enigma, utils, eeConstants} = require('enigma-js/node');
+const EthCrypto = require('eth-crypto')
 
 var EnigmaContract;
 if(typeof process.env.SGX_MODE === 'undefined' || (process.env.SGX_MODE != 'SW' && process.env.SGX_MODE != 'HW' )) {
@@ -143,23 +144,11 @@ contract("Enable", accounts => {
     });
     expect(task.engStatus).to.equal('SUCCESS');
     task = await enigma.decryptTaskResult(task);
-    console.log(task)
-    console.log("result:", task.decryptedOutput)
-    // let params = web3.eth.abi.decodeParameters([{
-    //     type: 'bytes',
-    //     name: 'signature',
-    //   }, {
-    //     type: 'bytes',
-    //     name: 'publicKey'
-    //   }], task.decryptedOutput)
-    // console.log(params)
-    // expect(web3.eth.abi.decodeParameters([{
-    //   type: 'bytes',
-    //   name: 'signature',
-    // },
-    // {
-    //   type: 'bytes',
-    //   name: 'publikKey'
-    // }], task.decryptedOutput).richestMillionaire).to.equal(accounts[2]);
+    let result = task.decryptedOutput;
+    let pubkey = result.substr(128, 128);
+    let signature = '0x' + result.substr(256).replace('00000000000000000000000000000000000000000000000000000000000000', '');
+    console.log(pubkey)
+    console.log(signature) 
+    expect(EthCrypto.recoverPublicKey(signature, EthCrypto.hash.keccak256('Hello world!'))).to.equal(pubkey)
   });
 });
