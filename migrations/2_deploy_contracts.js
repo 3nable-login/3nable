@@ -92,10 +92,10 @@ module.exports = async function(deployer, network, accounts) {
   });
 
   const config = {
-    filename: 'simple_addition.wasm',
+    filename: 'enable.wasm',
     fn: 'construct()',
     args: '',
-    gasLimit: 100000,
+    gasLimit: 4712388,
     gasPrice: utils.toGrains(1),
     from: accounts[0]
   };
