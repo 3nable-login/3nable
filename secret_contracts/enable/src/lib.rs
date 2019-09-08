@@ -39,14 +39,14 @@ static LOGINS: &str = "logins";
 // Structs
 #[derive(Serialize, Deserialize)]
 pub struct User {
-    userId: String,
-    privateKey: Vec<u8>,
-    publicKey: Vec<u8>
+    user_id: String,
+    private_key: Vec<u8>,
+    public_key: Vec<u8>
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Login {
-    userId: String,
+    user_id: String,
     code: U256,
     valid: bool,
 }
@@ -56,11 +56,11 @@ pub struct Contract;
 
 // Private functions accessible only by the secret contract
 impl Contract {
-    fn getUsers() -> Vec<User> {
+    fn get_users() -> Vec<User> {
         read_state!(USERS).unwrap_or_default()
     }
 
-    fn getLogins() -> Vec<Login> {
+    fn get_logins() -> Vec<Login> {
         read_state!(LOGINS).unwrap_or_default()
     }
 }
@@ -68,34 +68,34 @@ impl Contract {
 // Public trait defining public-facing secret contract functions
 #[pub_interface]
 pub trait ContractInterface{
-    fn addUser(userId: String, privateKey: Vec<u8>, publicKey: Vec<u8>);
-    fn addLogin(userId: String, code: U256);
-    fn signMessage(code: U256, message: String) -> (Vec<u8>, Vec<u8>);
+    fn add_user(user_id: String, private_key: Vec<u8>, public_key: Vec<u8>);
+    fn add_login(user_id: String, code: U256);
+    fn sign_message(code: U256, message: String) -> (Vec<u8>, Vec<u8>);
 }
 
 // Implementation of the public-facing secret contract functions defined in the ContractInterface
 // trait implementation for the Contract struct above
 impl ContractInterface for Contract {
     #[no_mangle]
-    fn addUser(userId: String, privateKey: Vec<u8>, publicKey: Vec<u8>) {
-        let mut users = Self::getUsers();
+    fn add_user(user_id: String, private_key: Vec<u8>, public_key: Vec<u8>) {
+        let mut users = Self::get_users();
         users.push(User {
-            userId,
-            privateKey,
-            publicKey,
+            user_id,
+            private_key,
+            public_key,
         });
         write_state!(USERS => users);
     }
 
     #[no_mangle]
-    fn addLogin(userId: String, code: U256) {
-        let users = Self::getUsers();
-        // check that a user with that userId exists
-        match users.iter().position(|u| u.userId == userId) {
-            Some(index) => {
-                let mut logins = Self::getLogins();
+    fn add_login(user_id: String, code: U256) {
+        let users = Self::get_users();
+        // check that a user with that user_id exists
+        match users.iter().position(|u| u.user_id == user_id) {
+            Some(_index) => {
+                let mut logins = Self::get_logins();
                 logins.push(Login {
-                    userId,
+                    user_id,
                     code,
                     valid: true,
                 });
@@ -107,23 +107,23 @@ impl ContractInterface for Contract {
     }
 
     #[no_mangle]
-    fn signMessage(code: U256, message: String) -> (Vec<u8>, Vec<u8>) {
-        let mut logins = Self::getLogins();
-        let users = Self::getUsers();
+    fn sign_message(code: U256, message: String) -> (Vec<u8>, Vec<u8>) {
+        let mut logins = Self::get_logins();
+        let users = Self::get_users();
         // check that a login instance with that code exists
         match logins.iter().position(|l| l.code == code) {
-            Some(index) => {
-                if logins[index].valid {
-                    logins[index].valid = false;
-                    let userId = &logins[index].userId;
-                    let userIndex = users.iter().position(|u| &u.userId == userId).unwrap();
-                    let user = &users[userIndex];
+            Some(_index) => {
+                if logins[_index].valid {
+                    logins[_index].valid = false;
+                    let user_id = &logins[_index].user_id;
+                    let user_index = users.iter().position(|u| &u.user_id == user_id).unwrap();
+                    let user = &users[user_index];
                     let mut private_key_slice: [u8; 32] = [0; 32];
-                    private_key_slice.copy_from_slice(&user.privateKey);
+                    private_key_slice.copy_from_slice(&user.private_key);
                     let keys = KeyPair::from_slice(&private_key_slice).unwrap();
-                    let signedMessage = keys.sign(message.as_bytes()).unwrap();
+                    let signed_message = keys.sign(message.as_bytes()).unwrap();
                     write_state!(LOGINS => logins);
-                    (signedMessage.to_vec(), user.publicKey.clone())
+                    (signed_message.to_vec(), user.public_key.clone())
                 } else {
                     panic!("Error: Code not valid")
                 }
