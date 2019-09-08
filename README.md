@@ -80,5 +80,5 @@ discovery migrate
 
 ## Additional Resources
 
-* Pitch Deck: 
+* [Pitch Deck](./additional_resources/pitchdeck.pdf)
 * User-flow Mockup: https://youtu.be/NC3oE5s5MY8
