@@ -2,7 +2,7 @@
 
 Allows you to interact with dApps without a Web3.0 provider or pulling your keys into a browser
 
-<center><img src="./additional_resources/logo.png" alt="Logo"></center>
+![3nable Logo](./additional_resources/logo.jpg)
 
 Devpost: LINK
 
